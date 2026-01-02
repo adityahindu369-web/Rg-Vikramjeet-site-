@@ -1,0 +1,1385 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RG VIKRAMJEET - MITRA</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #000;
+            overflow-x: hidden;
+        }
+
+        /* Splash Screen */
+        #splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: #000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 99999;
+            opacity: 1;
+            visibility: visible;
+            transition: opacity 0.6s ease-in-out, visibility 0.6s ease-in-out;
+        }
+
+        #splash-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .splash-logo {
+            width: 150px;
+            height: 150px;
+            border-radius: 25px;
+            animation: zoomIn 0.0s ease-out;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 40px rgba(255,255,255,0.1);
+        }
+
+        @keyframes zoomIn {
+            from {
+                transform: scale(0.5);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .splash-title {
+            color: white;
+            font-size: 32px;
+            font-weight: 900;
+            text-align: center;
+            animation: fadeInUp 0.0s ease-out 0.0s both;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+        }
+
+        .splash-subtitle {
+            color: #6366f1;
+            font-size: 14px;
+            font-weight: 600;
+            text-align: center;
+            animation: fadeInUp 0.0s ease-out 0.0s both;
+            letter-spacing: 3px;
+            margin-bottom: 50px;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .progress-container {
+            width: 220px;
+            height: 4px;
+            background: #222;
+            border-radius: 10px;
+            overflow: hidden;
+            animation: fadeInUp 0.0s ease-out 0.ps both;
+            margin-bottom: 30px;
+        }
+
+        .progress-bar {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #6366f1, #8b5cf6);
+            border-radius: 10px;
+            transition: width 0.0s linear;
+        }
+
+        .powered-footer {
+            position: absolute;
+            bottom: 30px;
+            color: #555;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            animation: fadeIn 0s ease-out 0s both;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Main Content */
+        #main-content {
+            display: none;
+            min-height: 100vh;
+            background: #000;
+        }
+
+        #main-content.visible {
+            display: block;
+            animation: fadeInContent 0.0s ease-in-out;
+        }
+
+        @keyframes fadeInContent {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Drawer Overlay */
+        .drawer-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .drawer-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Drawer */
+        .drawer {
+            position: fixed;
+            top: 0;
+            left: -300px;
+            width: 300px;
+            height: 100vh;
+            background: #0a0a0a;
+            z-index: 1001;
+            transition: left 0.3s ease;
+            overflow-y: auto;
+            border-right: 1px solid #1a1a1a;
+        }
+
+        .drawer.open {
+            left: 0;
+        }
+
+        .drawer-header {
+            padding: 40px 20px 30px;
+            border-bottom: 1px solid #1a1a1a;
+        }
+
+        .drawer-title {
+            color: white;
+            font-size: 24px;
+            font-weight: 900;
+            margin-bottom: 8px;
+        }
+
+        .drawer-title .highlight {
+            color: #6366f1;
+        }
+
+        .drawer-subtitle {
+            color: #6366f1;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 2px;
+        }
+
+        .drawer-menu {
+            padding: 10px 0;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            padding: 18px 25px;
+            color: #999;
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 600;
+            transition: all 0.2s;
+            cursor: pointer;
+            border-left: 3px solid transparent;
+        }
+
+        .menu-item:hover {
+            background: rgba(99, 102, 241, 0.05);
+            color: #fff;
+        }
+
+        .menu-item.active {
+            background: rgba(99, 102, 241, 0.1);
+            border-left: 3px solid #6366f1;
+            color: #fff;
+        }
+
+        .menu-icon {
+            font-size: 22px;
+            width: 28px;
+            text-align: center;
+        }
+
+        /* Header */
+        .header {
+            background: #0a0a0a;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border-bottom: 1px solid #1a1a1a;
+        }
+
+        .menu-btn {
+            width: 45px;
+            height: 45px;
+            background: #1a1a1a;
+            border: none;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .menu-btn:hover {
+            background: #252525;
+        }
+
+        .menu-icon-bar {
+            width: 22px;
+            height: 2px;
+            background: white;
+            position: relative;
+        }
+
+        .menu-icon-bar::before,
+        .menu-icon-bar::after {
+            content: '';
+            position: absolute;
+            width: 22px;
+            height: 2px;
+            background: white;
+            left: 0;
+            transition: all 0.3s;
+        }
+
+        .menu-icon-bar::before { top: -7px; }
+        .menu-icon-bar::after { top: 7px; }
+
+        .header-title {
+            flex: 1;
+        }
+
+        .header-title h1 {
+            font-size: 18px;
+            color: white;
+            font-weight: 700;
+            margin-bottom: 3px;
+        }
+
+        .header-title p {
+            font-size: 10px;
+            color: #6366f1;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .timer-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #1a1a1a;
+            padding: 8px 15px;
+            border-radius: 20px;
+        }
+
+        .timer-dot {
+            width: 8px;
+            height: 8px;
+            background: #22c55e;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .timer-text {
+            color: white;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        /* Search Bar */
+        .search-container {
+            padding: 15px 20px;
+            background: #0a0a0a;
+        }
+
+        .search-box {
+            background: #1a1a1a;
+            border: none;
+            border-radius: 12px;
+            padding: 15px 20px 15px 50px;
+            width: 100%;
+            color: #fff;
+            font-size: 14px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: 18px center;
+            background-size: 18px;
+        }
+
+        .search-box::placeholder {
+            color: #555;
+        }
+
+        /* Course Cards Container */
+        .courses-wrapper {
+            padding: 15px;
+            background: #000;
+        }
+
+        .page-title {
+            color: white;
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            padding: 0 5px;
+        }
+
+        .course-card {
+            background: #0a0a0a;
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            border: 1px solid #1a1a1a;
+            transition: transform 0.2s;
+            cursor: pointer;
+        }
+
+        .course-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .course-card.hidden {
+            display: none;
+        }
+
+        .course-banner {
+            position: relative;
+            height: 180px;
+            overflow: hidden;
+            background: #1a1a1a;
+        }
+
+        .course-banner img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+
+        .price-tag {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 700;
+            backdrop-filter: blur(10px);
+        }
+
+        .favorite-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            width: 40px;
+            height: 40px;
+            background: rgba(0,0,0,0.9);
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+            cursor: pointer;
+            font-size: 22px;
+            transition: all 0.2s;
+            color: white;
+            z-index: 10;
+        }
+
+        .favorite-btn:active {
+            transform: scale(0.85);
+        }
+
+        .favorite-btn.favorited {
+            background: rgba(0,0,0,0.9);
+            color: #ef4444;
+        }
+
+        .course-info {
+            padding: 20px;
+        }
+
+        .course-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+
+        .course-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .duration-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #888;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .duration-icon {
+            width: 16px;
+            height: 16px;
+            color: #6366f1;
+        }
+
+        .arrow-icon {
+            color: #888;
+            font-size: 20px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .empty-text {
+            color: #666;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        /* Statistics Page Styles */
+        #statisticsWrapper {
+            display: none;
+            padding: 15px;
+            background: #000;
+        }
+
+        #statisticsWrapper.visible {
+            display: block;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: #0a0a0a;
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid #1a1a1a;
+        }
+
+        .stat-label {
+            color: #888;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-value {
+            color: white;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .stat-sub {
+            color: #6366f1;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .heatmap-container {
+            background: #0a0a0a;
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid #1a1a1a;
+        }
+
+        .heatmap-title {
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .heatmap {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 6px;
+        }
+
+        .heatmap-day {
+            aspect-ratio: 1;
+            background: #1a1a1a;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .heatmap-day.active {
+            background: #6366f1;
+        }
+
+        .heatmap-day:hover {
+            transform: scale(1.1);
+        }
+
+        /* Developer Page Styles - NEW DESIGN */
+        #developerWrapper {
+            display: none;
+            background: #000;
+            min-height: 100vh;
+        }
+
+        #developerWrapper.visible {
+            display: block;
+        }
+
+        .dev-header {
+            background: #000;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            border-bottom: 1px solid #1a1a1a;
+        }
+
+        .back-btn {
+            width: 44px;
+            height: 44px;
+            background: #1a1a1a;
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .back-btn svg {
+            width: 24px;
+            height: 24px;
+            stroke: #fff;
+            fill: none;
+            stroke-width: 2;
+        }
+
+        .dev-header-text h1 {
+            font-size: 22px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            line-height: 1.2;
+            color: white;
+        }
+
+        .dev-header-text p {
+            color: #7c7cff;
+            font-size: 12px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
+
+        .dev-content {
+            padding: 80px 16px 40px;
+        }
+
+        .profile-card {
+            background: #1a1a1a;
+            border-radius: 24px;
+            padding: 50px 20px 36px;
+            text-align: center;
+        }
+
+        .profile-img-wrapper {
+            margin: 0 auto 32px;
+            position: relative;
+            width: 180px;
+            height: 180px;
+        }
+
+        .profile-ring {
+            width: 180px;
+            height: 180px;
+            border: 4px solid #6366f1;
+            border-radius: 50%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            box-shadow: 0 0 24px rgba(99, 102, 241, 0.4);
+        }
+
+        .profile-img {
+            width: 162px;
+            height: 162px;
+            border-radius: 50%;
+            overflow: hidden;
+            position: absolute;
+            top: 9px;
+            left: 9px;
+            background: #2a2a2a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .profile-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .verified-badge {
+            position: absolute;
+            bottom: 4px;
+            right: 4px;
+            background: #2563eb;
+            color: #fff;
+            padding: 5px 12px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            border: 3px solid #1a1a1a;
+        }
+
+        .profile-name {
+            font-size: 42px;
+            font-weight: 300;
+            margin-bottom: 10px;
+            font-style: italic;
+            letter-spacing: 0px;
+            line-height: 1.1;
+            color: white;
+        }
+
+        .profile-title {
+            color: #8b8bff;
+            font-size: 14px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            font-weight: 500;
+            margin-bottom: 32px;
+        }
+
+        .profile-bio {
+            background: #0f0f0f;
+            border-radius: 16px;
+            padding: 26px 22px;
+            margin: 0 0 28px;
+            font-size: 15px;
+            line-height: 1.55;
+            color: #9ca3af;
+        }
+
+        .spidy-link {
+            color: #8b8bff;
+            font-weight: 500;
+        }
+
+        .social-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .social-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 16px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 500;
+            transition: transform 0.2s;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            font-family: inherit;
+        }
+
+        .social-btn:active {
+            transform: scale(0.98);
+        }
+
+        .telegram-btn {
+            background: #2aabee;
+            color: #fff;
+        }
+
+        .whatsapp-btn {
+            background: #25d366;
+            color: #000;
+        }
+
+        .dev-footer {
+            text-align: center;
+            padding: 36px 20px 50px;
+            color: #4a4a4a;
+            font-size: 11px;
+            letter-spacing: 0.5px;
+        }
+
+        .dev-footer .highlight {
+            color: #6366f1;
+        }
+
+        @media (min-width: 768px) {
+            .courses-wrapper {
+                max-width: 1200px;
+                margin: 0 auto;
+            }
+            
+            #coursesWrapper {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+            }
+
+            .course-card {
+                margin-bottom: 0;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .profile-card {
+                max-width: 450px;
+                margin: 0 auto;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            #coursesWrapper {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(5, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Splash Screen -->
+    <div id="splash-screen">
+        <img src="content://media/external/downloads/1000101114" alt="Logo" class="splash-logo" onerror="this.src='https://via.placeholder.com/150/6366f1/ffffff?text=RG'">
+        <div class="splash-title">RG VIKRAMJEET</div>
+        <div class="splash-subtitle">MITRA</div>
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        <div class="powered-footer">POWERED BY ADII</div>
+    </div>
+
+    <!-- Drawer Overlay -->
+    <div class="drawer-overlay" id="drawerOverlay"></div>
+
+    <!-- Drawer -->
+    <div class="drawer" id="drawer">
+        <div class="drawer-header">
+            <div class="drawer-title">RG <span class="highlight">VIKRAMJEET</span></div>
+            <div class="drawer-subtitle">MITRA</div>
+        </div>
+        <div class="drawer-menu">
+            <div class="menu-item active" onclick="showHome()">
+                <span class="menu-icon">🏠</span>
+                <span>Home</span>
+            </div>
+            <div class="menu-item" onclick="showFavorites()">
+                <span class="menu-icon">❤️</span>
+                <span>Favorites</span>
+            </div>
+            <div class="menu-item" onclick="showStatistics()">
+                <span class="menu-icon">📊</span>
+                <span>Statistics</span>
+            </div>
+            <div class="menu-item" onclick="showDeveloper()">
+                <span class="menu-icon">👨‍💻</span>
+                <span>Developer</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div id="main-content">
+        <!-- Header -->
+        <div class="header">
+            <button class="menu-btn" id="menuBtn">
+                <div class="menu-icon-bar"></div>
+            </button>
+            <div class="header-title">
+                <h1>RG VIKRAMJEET</h1>
+                <p>MITRA</p>
+            </div>
+            <div class="timer-badge">
+                <span class="timer-dot"></span>
+                <span class="timer-text" id="timer">0h 9m</span>
+            </div>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="search-container" id="searchContainer">
+            <input type="text" class="search-box" id="searchBox" placeholder="Search your batch...">
+        </div>
+
+        <!-- Course Cards -->
+        <div class="courses-wrapper" id="coursesWrapper">
+            <!-- Course cards will be inserted here -->
+        </div>
+
+        <!-- Statistics Page -->
+        <div id="statisticsWrapper">
+            <div class="page-title">Statistics</div>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">CURRENT RANK</div>
+                    <div class="stat-value">NOOB</div>
+                    <div class="stat-sub">Level 0.0 • 0% Efficiency</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">APP TIME</div>
+                    <div class="stat-value">0h 16m</div>
+                    <div class="stat-sub">Total usage time</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">STUDY TIME</div>
+                    <div class="stat-value">0h 0m</div>
+                    <div class="stat-sub">Active study time</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">STREAK</div>
+                    <div class="stat-value">1 Days</div>
+                    <div class="stat-sub">Current streak</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">COMPLETED</div>
+                    <div class="stat-value">0 Lecs</div>
+                    <div class="stat-sub">Lectures completed</div>
+                </div>
+            </div>
+
+            <div class="heatmap-container">
+                <div class="heatmap-title">Last 20 Days Performance</div>
+                <div class="heatmap" id="heatmap">
+                    <!-- Heatmap days will be generated by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Developer Page - NEW DESIGN -->
+        <div id="developerWrapper">
+            <div class="dev-header">
+                <button class="back-btn" onclick="showHome()">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M15 18l-6-6 6-6" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+                <div class="dev-header-text">
+                    <h1>DEVELOPER PROFILE</h1>
+                    <p>MITRA</p>
+                </div>
+            </div>
+
+            <div class="dev-content">
+                <div class="profile-card">
+                    <div class="profile-img-wrapper">
+                        <div class="profile-ring"></div>
+                        <div class="profile-img">
+                            <img src="content://media/external/downloads/1000101114" alt="Profile" onerror="this.src='https://via.placeholder.com/162/6366f1/ffffff?text=ADII'">
+                        </div>
+                        <span class="verified-badge">VERIFIED</span>
+                    </div>
+
+                    <h2 class="profile-name">ADII</h2>
+                    <p class="profile-title">FULL STACK ARCHITECT</p>
+
+                    <div class="profile-bio">
+                        Building secure, high-performance educational platforms. Creator of <span class="spidy-link">MITRA</span>.
+                    </div>
+
+                    <div class="social-buttons">
+                        <button class="social-btn telegram-btn" onclick="openTelegram()">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/>
+                            </svg>
+                            Join Telegram Channel
+                        </button>
+                        <button class="social-btn whatsapp-btn" onclick="openWhatsApp()">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+                            </svg>
+                            Join WhatsApp Group
+                        </button>
+                    </div>
+                </div>
+
+                <div class="dev-footer">
+                    © 2025 <span class="highlight">RG VIKRAMJEET</span> • <span class="highlight">MITRA</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden Template -->
+    <template id="courseTemplate">
+        <div class="course-card" data-title="CHAMPIONS 26.0 Maths Special LIVE BATCH by ADITYA SIR (Arithmetic + Advance) (Pre + Mains) For all Exams Starts From 29 Dec. 2025.">
+            <div class="course-banner">
+                <img src="https://appx-content-v2.classx.co.in/paid_course3/2025-12-27-0.2696179711790214.jpeg" alt="Course">
+                <div class="price-tag">₹599</div>
+                <button class="favorite-btn" onclick="toggleFavorite(this, event)">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="course-info">
+                <h3 class="course-title">CHAMPIONS 26.0 Maths Special LIVE BATCH by ADITYA SIR (Arithmetic + Advance) (Pre + Mains) For all Exams Starts From 29 Dec. 2025.</h3>
+                <div class="course-meta">
+                    <div class="duration-badge">
+                        <svg class="duration-icon" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"/>
+                        </svg>
+                        <span>LIFETIME</span>
+                    </div>
+                    <span class="arrow-icon">→</span>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <script>
+        let currentPage = 'home';
+        let favorites = {};
+        let allCourses = [];
+
+        // Course link opening function
+        function openCourseLink() {
+            window.open('https://adityahindu369-web.github.io/Chapion26site/', '_blank');
+        }
+
+        // Fix: Ensure DOM is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            // Start loading animation immediately
+            startSplashScreen();
+            
+            // Initialize elements
+            const menuBtn = document.getElementById('menuBtn');
+            const drawer = document.getElementById('drawer');
+            const drawerOverlay = document.getElementById('drawerOverlay');
+            const searchBox = document.getElementById('searchBox');
+            const timerElement = document.getElementById('timer');
+
+            // Drawer functionality
+            if (menuBtn) {
+                menuBtn.addEventListener('click', openDrawer);
+            }
+            
+            if (drawerOverlay) {
+                drawerOverlay.addEventListener('click', closeDrawer);
+            }
+
+            // Timer functionality
+            if (timerElement) {
+                startTimer();
+            }
+
+            // Search functionality
+            if (searchBox) {
+                searchBox.addEventListener('input', handleSearch);
+            }
+
+            // Load favorites
+            loadFavorites();
+        });
+
+        function startSplashScreen() {
+            const progressBar = document.getElementById('progressBar');
+            const splashScreen = document.getElementById('splash-screen');
+            const mainContent = document.getElementById('main-content');
+            
+            if (!progressBar || !splashScreen || !mainContent) {
+                // If elements not found, show main content immediately
+                if (mainContent) {
+                    mainContent.style.display = 'block';
+                }
+                return;
+            }
+            
+            let progress = 0;
+            const loadingInterval = setInterval(() => {
+                progress += 2;
+                progressBar.style.width = progress + '%';
+                
+                if (progress >= 100) {
+                    clearInterval(loadingInterval);
+                    setTimeout(() => {
+                        splashScreen.classList.add('hidden');
+                        setTimeout(() => {
+                            mainContent.classList.add('visible');
+                            initializeCourses();
+                            initializeHeatmap();
+                        }, 300);
+                    }, 500);
+                }
+            }, 25);
+        }
+
+        function startTimer() {
+            let minutes = 9;
+            let hours = 0;
+            setInterval(() => {
+                minutes++;
+                if (minutes >= 60) {
+                    hours++;
+                    minutes = 0;
+                }
+                document.getElementById('timer').textContent = `${hours}h ${minutes}m`;
+            }, 60000);
+        }
+
+        function handleSearch(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const courseCards = document.querySelectorAll('#coursesWrapper .course-card');
+            
+            courseCards.forEach(card => {
+                const title = card.getAttribute('data-title').toLowerCase();
+                if (title.includes(searchTerm)) {
+                    card.classList.remove('hidden');
+                } else {
+                    card.classList.add('hidden');
+                }
+            });
+        }
+
+        // Initialize courses on page load
+        function initializeCourses() {
+            const template = document.getElementById('courseTemplate');
+            const coursesWrapper = document.getElementById('coursesWrapper');
+            
+            if (!template || !coursesWrapper) return;
+            
+            const card = template.content.cloneNode(true).querySelector('.course-card');
+            
+            // Add click event to course card to open link
+            card.addEventListener('click', function(e) {
+                // Check if the click was on the favorite button
+                if (!e.target.closest('.favorite-btn')) {
+                    openCourseLink();
+                }
+            });
+            
+            allCourses.push(card.cloneNode(true));
+            showHome();
+        }
+
+        // Initialize heatmap
+        function initializeHeatmap() {
+            const heatmap = document.getElementById('heatmap');
+            if (!heatmap) return;
+            
+            heatmap.innerHTML = '';
+            
+            // Create 20 heatmap days (Last 20 Days)
+            for (let i = 0; i < 20; i++) {
+                const day = document.createElement('div');
+                day.className = 'heatmap-day';
+                
+                // Randomly mark some days as active for demo
+                if (Math.random() > 0.5) {
+                    day.classList.add('active');
+                }
+                
+                heatmap.appendChild(day);
+            }
+        }
+
+        // Drawer functions
+        function openDrawer() {
+            const drawer = document.getElementById('drawer');
+            const drawerOverlay = document.getElementById('drawerOverlay');
+            
+            if (drawer) drawer.classList.add('open');
+            if (drawerOverlay) drawerOverlay.classList.add('active');
+        }
+
+        function closeDrawer() {
+            const drawer = document.getElementById('drawer');
+            const drawerOverlay = document.getElementById('drawerOverlay');
+            
+            if (drawer) drawer.classList.remove('open');
+            if (drawerOverlay) drawerOverlay.classList.remove('active');
+        }
+
+        // Update menu active state
+        function updateMenuState(page) {
+            const menuItems = document.querySelectorAll('.menu-item');
+            if (menuItems.length > 0) {
+                menuItems.forEach(item => {
+                    item.classList.remove('active');
+                });
+                
+                if (page === 'home') {
+                    menuItems[0].classList.add('active');
+                } else if (page === 'favorites') {
+                    menuItems[1].classList.add('active');
+                } else if (page === 'statistics') {
+                    menuItems[2].classList.add('active');
+                } else if (page === 'developer') {
+                    menuItems[3].classList.add('active');
+                }
+            }
+        }
+
+        // Show Home
+        function showHome() {
+            currentPage = 'home';
+            updateMenuState('home');
+            closeDrawer();
+            
+            // Hide other pages, show courses and search
+            const statsWrapper = document.getElementById('statisticsWrapper');
+            const devWrapper = document.getElementById('developerWrapper');
+            const coursesWrapper = document.getElementById('coursesWrapper');
+            const searchContainer = document.getElementById('searchContainer');
+            const header = document.querySelector('.header');
+            
+            if (statsWrapper) statsWrapper.classList.remove('visible');
+            if (devWrapper) devWrapper.classList.remove('visible');
+            if (coursesWrapper) {
+                coursesWrapper.style.display = 'block';
+                coursesWrapper.innerHTML = '';
+            }
+            if (searchContainer) searchContainer.style.display = 'block';
+            if (header) header.style.display = 'flex';
+            
+            if (coursesWrapper) {
+                allCourses.forEach(card => {
+                    const clonedCard = card.cloneNode(true);
+                    const title = clonedCard.getAttribute('data-title');
+                    
+                    // Update favorite state
+                    const btn = clonedCard.querySelector('.favorite-btn');
+                    if (favorites[title] && btn) {
+                        btn.classList.add('favorited');
+                    }
+                    
+                    // Add click event to course card to open link
+                    clonedCard.addEventListener('click', function(e) {
+                        // Check if the click was on the favorite button
+                        if (!e.target.closest('.favorite-btn')) {
+                            openCourseLink();
+                        }
+                    });
+                    
+                    coursesWrapper.appendChild(clonedCard);
+                });
+            }
+        }
+
+        // Show Favorites
+        function showFavorites() {
+            currentPage = 'favorites';
+            updateMenuState('favorites');
+            closeDrawer();
+            
+            // Hide other pages, show courses and search
+            const statsWrapper = document.getElementById('statisticsWrapper');
+            const devWrapper = document.getElementById('developerWrapper');
+            const coursesWrapper = document.getElementById('coursesWrapper');
+            const searchContainer = document.getElementById('searchContainer');
+            const header = document.querySelector('.header');
+            
+            if (statsWrapper) statsWrapper.classList.remove('visible');
+            if (devWrapper) devWrapper.classList.remove('visible');
+            if (coursesWrapper) {
+                coursesWrapper.style.display = 'block';
+            }
+            if (searchContainer) searchContainer.style.display = 'block';
+            if (header) header.style.display = 'flex';
+            
+            if (coursesWrapper) {
+                const favTitles = Object.keys(favorites);
+                
+                if (favTitles.length === 0) {
+                    coursesWrapper.innerHTML = `
+                        <div style="grid-column: 1/-1;">
+                            <div class="empty-state">
+                                <div class="empty-icon">💔</div>
+                                <div class="empty-text">No favorite batches yet!</div>
+                            </div>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                coursesWrapper.innerHTML = '';
+                
+                allCourses.forEach(card => {
+                    const title = card.getAttribute('data-title');
+                    if (favorites[title]) {
+                        const clonedCard = card.cloneNode(true);
+                        const btn = clonedCard.querySelector('.favorite-btn');
+                        if (btn) btn.classList.add('favorited');
+                        
+                        // Add click event to course card to open link
+                        clonedCard.addEventListener('click', function(e) {
+                            // Check if the click was on the favorite button
+                            if (!e.target.closest('.favorite-btn')) {
+                                openCourseLink();
+                            }
+                        });
+                        
+                        coursesWrapper.appendChild(clonedCard);
+                    }
+                });
+            }
+        }
+
+        // Show Statistics
+        function showStatistics() {
+            currentPage = 'statistics';
+            updateMenuState('statistics');
+            closeDrawer();
+            
+            // Hide other pages, show statistics
+            const coursesWrapper = document.getElementById('coursesWrapper');
+            const searchContainer = document.getElementById('searchContainer');
+            const devWrapper = document.getElementById('developerWrapper');
+            const statsWrapper = document.getElementById('statisticsWrapper');
+            const header = document.querySelector('.header');
+            
+            if (coursesWrapper) coursesWrapper.style.display = 'none';
+            if (searchContainer) searchContainer.style.display = 'none';
+            if (devWrapper) devWrapper.classList.remove('visible');
+            if (statsWrapper) statsWrapper.classList.add('visible');
+            if (header) header.style.display = 'flex';
+        }
+
+        // Show Developer - NEW DESIGN
+        function showDeveloper() {
+            currentPage = 'developer';
+            updateMenuState('developer');
+            closeDrawer();
+            
+            // Hide other pages and header, show developer profile
+            const coursesWrapper = document.getElementById('coursesWrapper');
+            const searchContainer = document.getElementById('searchContainer');
+            const statsWrapper = document.getElementById('statisticsWrapper');
+            const devWrapper = document.getElementById('developerWrapper');
+            const header = document.querySelector('.header');
+            
+            if (coursesWrapper) coursesWrapper.style.display = 'none';
+            if (searchContainer) searchContainer.style.display = 'none';
+            if (statsWrapper) statsWrapper.classList.remove('visible');
+            if (devWrapper) devWrapper.classList.add('visible');
+            if (header) header.style.display = 'none';
+        }
+
+        // Open Telegram
+        function openTelegram() {
+            window.open('https://t.me/+mq7g373RrHViNzg1', '_blank');
+        }
+
+        // Open WhatsApp
+        function openWhatsApp() {
+            window.open('https://whatsapp.com/channel/0029Vb7dU6OFi8xZakWrnz42', '_blank');
+        }
+
+        // Favorite Functionality
+        function toggleFavorite(btn, event) {
+            if (event) {
+                event.stopPropagation();
+            }
+            
+            const card = btn.closest('.course-card');
+            const title = card.getAttribute('data-title');
+            
+            if (btn.classList.contains('favorited')) {
+                btn.classList.remove('favorited');
+                delete favorites[title];
+            } else {
+                btn.classList.add('favorited');
+                favorites[title] = true;
+            }
+            
+            saveFavorites();
+            
+            // If on favorites page and removing favorite, refresh after animation
+            if (currentPage === 'favorites' && !favorites[title]) {
+                setTimeout(() => showFavorites(), 300);
+            }
+        }
+
+        function saveFavorites() {
+            localStorage.setItem('favoriteBatches', JSON.stringify(favorites));
+        }
+
+        function loadFavorites() {
+            const saved = localStorage.getItem('favoriteBatches');
+            if (saved) {
+                favorites = JSON.parse(saved);
+            }
+        }
+    </script>
+</body>
+</html>
